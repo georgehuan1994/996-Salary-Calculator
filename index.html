@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link type="favicon" rel="shortcut icon" href="images/favicon.ico">
+    <title>996 薪资计算器</title>
+
+<!--    <link rel="stylesheet" href="../static/bootstrap-3.4.1-dist/css/bootstrap.min.css">-->
+<!--    <script src="../static/jquery-3.6.0/jquery-3.6.0.min.js"></script>-->
+<!--    <script src="../static/bootstrap-3.4.1-dist/js/bootstrap.min.js"></script>-->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            padding-top: 70px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 400;
+            color: #24292f;
+            text-rendering: optimizeLegibility;
+        }
+
+        a:hover {
+            color: #fff;
+            background-color: #444;
+            -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            -moz-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+        }
+
+        .navbar-nav > li > a {
+            padding-top: 17px;
+            padding-bottom: 13px;
+        }
+
+
+        .col-lg-1 {
+            width: 50px;
+        }
+
+        .progress {
+            height: 70px;
+            width: 26px;
+            transform: rotate(180deg);
+            margin: 2px 0 0 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #5bc0de;
+        }
+
+        .progress-bar > p {
+            /*color: #24292f;*/
+        }
+
+        .ctrl {
+            width: 26px;
+            height: 20px;
+            padding: 0;
+        }
+
+
+    </style>
+
+    <script>
+        function add_progress(id) {
+            let now = parseInt(id.attr('aria-valuenow'));
+            let max = parseInt(id.attr('aria-valuemax'));
+            if (now >= max) {
+                id.attr('aria-valuenow', max);
+            }
+            else {
+                now = now + 1
+                id.attr('aria-valuenow', now);
+            }
+            id.css('height',toPercent(now/max));
+            id.children("p").text(now);
+            set_progress_color(id,now);
+        }
+
+        function reduce_progress(id) {
+            let now = parseInt(id.attr('aria-valuenow'));
+            let min = parseInt(id.attr('aria-valuemin'));
+            let max = parseInt(id.attr('aria-valuemax'));
+            if (now <= min) {
+                id.attr('aria-valuenow', min);
+            }
+            else {
+                now = now - 1
+                id.attr('aria-valuenow', now);
+            }
+            id.css('height',toPercent(now/max));
+            id.children("p").text(now);
+            set_progress_color(id,now);
+        }
+
+        function toPercent(point) {
+            let str = Number(point * 100).toFixed(2);
+            str += "%";
+            return str;
+        }
+
+        function set_progress_color(id,value) {
+            if (value >= 12) {
+                id.css('background-color','#d9534f');
+            }
+            else if (value > 8) {
+                id.css('background-color','#f0ad4e');
+            }
+            else if (value === 8) {
+                id.css('background-color','#5bc0de');
+            }
+            else {
+                id.css('background-color','#5cb85c');
+            }
+
+            if (value > 5) {
+                id.children("p").css('color','#fff');
+            }
+            else {
+                id.children("p").css('color','#24292f');
+            }
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" style="width: 56px">
+                <img alt="Brand" src="images/favicon.ico" style="width: 28px;position: absolute;top: 12px">
+            </a>
+            <a class="navbar-brand" href="/"
+               style="color: white;font-size: 20px;letter-spacing: -0.04rem;line-height: 20px;">
+                996 薪资计算器
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" role="navigation" id="navbar-collapse">
+            <ul class="nav navbar-nav navbar-right" style="font-size: 16px;">
+                <li><a href="mailto:george.huan1994@foxmail.com"><i class="glyphicon glyphicon-envelope"></i> 分享</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="expected-year-salary">期望年薪：</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">￥</div>
+                                <input type="number" class="form-control" id="expected-year-salary" placeholder="200000" step="1000" min="1000">
+                            </div>
+                            <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 965，12薪，公积金缴存比例12%，公积金缴存基数=月薪。你期望的年薪是多少？</span>
+                        </div>
+                    </form>
+                    <hr>
+                    <div id="working-hours">
+                        <label for="working-hours">每日工时：</label>
+                        <div class="row">
+                            <!-- 周一（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-mon'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-mon" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-mon'))">-</button>
+                                <p class="small">MON</p>
+                            </div>
+                            <!-- 周二（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-tue'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-tue" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-tue'))">-</button>
+                                <p class="small">TUE</p>
+                            </div>
+                            <!-- 周三（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-wed'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-wed" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-wed'))">-</button>
+                                <p class="small">WED</p>
+                            </div>
+                            <!-- 周四（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-thu'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-thu" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-thu'))">-</button>
+                                <p class="small">THU</p>
+                            </div>
+                            <!-- 周五（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-fri'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-fri" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-fri'))">-</button>
+                                <p class="small">FRI</p>
+                            </div>
+                            <!-- 周六（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-sat'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-sat" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-sat'))">-</button>
+                                <p class="small">SAT</p>
+                            </div>
+                            <!-- 周日（单） -->
+                            <div class="col-lg-1">
+                                <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-sun'));">+</button>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" id="s-sun" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                </div>
+                                <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-sun'))">-</button>
+                                <p class="small">SUN</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer class="navbar navbar-inverse navbar-bottom" style="border-radius: 0; bottom: -50px;">
+    <div class="container">
+        <div class="navbar-left">
+            <ul class="nav navbar-nav" style="">
+                <li><a class="navbar-text" href="https://gorh.cn/" style="padding: 0">Back to George's Game Dev Lab</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <ul class="nav navbar-nav" style="">
+                <li class="navbar-text"><a target="_blank"
+                                           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011202001764"
+                                           style="padding: 0"><img src="../images/gongan.png"
+                                                                   style="width: 18px;margin-bottom: 5px;margin-right: 1px"/>粤公网安备
+                    44011202001764号</a></li>
+                <li class="navbar-text"><a target="_blank" href="https://beian.miit.gov.cn" style="padding: 0">粤ICP备2021123834号</a>
+                </li>
+                <li class="navbar-text">© 2021 George Huan. All rights reserved</li>
+            </ul>
+        </div>
+    </div>
+</footer>
+</body>
+
+</html>
