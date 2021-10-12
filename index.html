@@ -95,8 +95,16 @@
         let d_sat = 0;
         let d_sun = 0;
 
-        let work_day_hours = 0; // 工作日工时
+        let work_day_hours_normal = 0; // 工作日正常工时
+        let work_day_hours_overtime = 0; // 工作日加班工时
         let week_day_hours = 0; // 休息日工时
+        let deserved_year_salary = 0; // 应得年薪
+        let deserved_month_salary = 0; // 应得月薪
+        let enterprise_provident_fund_deposit_ratio = 12; // 公积金缴存比例 (公司)
+        let enterprise_provident_fund_deposit_base = 2100; // 公积金缴存基数 (公司)
+
+        let corrected_month_salary = 0; // 补正月薪
+
 
         $(window).ready(function(){
             set_working_days(computing_mode);
@@ -178,10 +186,10 @@
                 set_progress($('#d-sun'), d_sun = 0);
             }
 
-            cal_hours();
+            calc();
         }
 
-        function cal_hours() {
+        function calc() {
             s_mon = parseInt($('#s-mon').attr('aria-valuenow'));
             s_tue = parseInt($('#s-tue').attr('aria-valuenow'));
             s_wed = parseInt($('#s-wed').attr('aria-valuenow'));
@@ -199,28 +207,59 @@
             d_sun = parseInt($('#d-sun').attr('aria-valuenow'));
 
             if (is_single_week){
-                work_day_hours = (s_mon + s_tue + s_wed + s_thu + s_fri) * 50;
+                let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri;
+                work_day_hours_normal = (_WorkDayHourTotal<=40 ? _WorkDayHourTotal : 40) * 50;
+                work_day_hours_overtime = _WorkDayHourTotal * 50 - work_day_hours_normal;
                 week_day_hours = (s_sat + s_sun) * 50;
-                $('#workday-hours').text(work_day_hours);
+                $('#workday-hours-normal').text(work_day_hours_normal);
+                $('#workday-hours-overtime').text(work_day_hours_overtime);
                 $('#weekday-hours').text(week_day_hours);
             }
             else {
-                work_day_hours = (s_mon + s_tue + s_wed + s_thu + s_fri + d_mon + d_tue + d_wed + d_thu + d_fri) * 25;
+                let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri + d_mon + d_tue + d_wed + d_thu + d_fri;
+                work_day_hours_normal = (_WorkDayHourTotal<=80 ? _WorkDayHourTotal : 80) * 25;
+                work_day_hours_overtime = _WorkDayHourTotal * 25 - work_day_hours_normal;
                 week_day_hours = (s_sat + s_sun + d_sat + d_sun) * 25;
-                $('#workday-hours').text(work_day_hours);
+                $('#workday-hours-normal').text(work_day_hours_normal);
+                $('#workday-hours-overtime').text(work_day_hours_overtime);
                 $('#weekday-hours').text(week_day_hours);
+            }
+
+            if ($('#expected-year-salary').val() != '') {
+                expected_year_salary = parseInt($('#expected-year-salary').val());
             }
 
             standard_monthly_rate = expected_year_salary / 12;
             standard_hourly_rate = expected_year_salary / (8 * 5 * 50);
             $('#standard-hourly-rate').text(standard_hourly_rate.toFixed(2));
             $('#standard-monthly-rate').text(standard_monthly_rate.toFixed(2));
+
+            deserved_year_salary = standard_hourly_rate * (work_day_hours_normal + work_day_hours_overtime * 1.5 + week_day_hours * 2);
+            // console.log(deserved_year_salary)
+
+            deserved_month_salary = deserved_year_salary / Number($('#how-many-month-paid').val());
+            $('#enterprise-provident-fund-deposit-base').prop('placeholder',deserved_month_salary.toFixed(0));
+            // console.log(deserved_month_salary.toFixed(0));
+
+            enterprise_provident_fund_deposit_ratio = parseInt($('#enterprise-provident-fund-deposit-ratio').val());
+            enterprise_provident_fund_deposit_base = parseInt($('#enterprise-provident-fund-deposit-base').val());
+
+            if ($('#is-same-fund-base').prop('checked')) {
+                enterprise_provident_fund_deposit_base = corrected_month_salary = deserved_month_salary;
+                corrected_month_salary = deserved_month_salary + enterprise_provident_fund_deposit_base * (12 - enterprise_provident_fund_deposit_ratio) / 100
+                $('#enterprise-provident-fund-deposit-base').prop({'disabled':true,'placeholder':enterprise_provident_fund_deposit_base.toFixed(0),'value':deserved_month_salary});
+            }
+            else {
+                corrected_month_salary = deserved_month_salary + enterprise_provident_fund_deposit_base * (12 - enterprise_provident_fund_deposit_ratio) / 100 + (deserved_month_salary - enterprise_provident_fund_deposit_base) * 0.12;
+                $('#enterprise-provident-fund-deposit-base').prop({'disabled':false,'placeholder':deserved_month_salary.toFixed(0)});
+            }
+
+            $('#corrected-month-salary').text(corrected_month_salary.toFixed(0));
         }
 
         function set_progress(id, value) {
-            let max = parseInt(id.attr('aria-valuemax'));
             id.attr('aria-valuenow', value);
-            id.css('height',toPercent(value/max));
+            id.css('height',toPercent(value / 24));
             id.children("p").text(value);
             set_progress_color(id,value);
         }
@@ -228,28 +267,27 @@
         function add_progress(id) {
             $('#custom').prop("checked",true);
             let now = parseInt(id.attr('aria-valuenow'));
-            let max = parseInt(id.attr('aria-valuemax'));
-            if (now >= max) {
-                set_progress(id, max);
+            if (now >= 24) {
+                set_progress(id, 24);
             }
             else {
                 now = now + 1
                 set_progress(id, now);
             }
-            cal_hours();
+            calc();
         }
 
         function reduce_progress(id) {
+            $('#custom').prop("checked",true);
             let now = parseInt(id.attr('aria-valuenow'));
-            let min = parseInt(id.attr('aria-valuemin'));
-            if (now <= min) {
-                set_progress(id, min);
+            if (now <= 0) {
+                set_progress(id, 0);
             }
             else {
                 now = now - 1
                 set_progress(id, now);
             }
-            cal_hours();
+            calc();
         }
 
         function toPercent(point) {
@@ -315,10 +353,10 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/" style="width: 56px">
-                <img alt="Brand" src="images/favicon.ico" style="width: 28px;position: absolute;top: 12px">
+                <img alt="Brand" src="images/favicon.ico" style="width: 26px;position: absolute;top: 12px">
             </a>
             <a class="navbar-brand" href="/"
-               style="color: white;font-size: 20px;letter-spacing: -0.04rem;line-height: 20px;">
+               style="color: white;letter-spacing: -0.04rem;line-height: 20px;">
                 996 薪资计算器
             </a>
         </div>
@@ -335,16 +373,16 @@
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form class="form-inline">
+                    <div class="form-inline">
                         <div class="form-group">
                             <label for="expected-year-salary">期望年薪：</label>
                             <div class="input-group">
                                 <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="expected-year-salary" placeholder="200000" step="1000" min="1000">
+                                <input type="number" class="form-control" id="expected-year-salary" placeholder="200000" step="1000" min="1000" onchange="calc();">
                             </div>
                             <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 965，12薪，公积金缴存比例12%，公积金缴存基数=月薪。你期望的年薪是多少？</span>
                         </div>
-                    </form>
+                    </div>
                     <p>标准时薪: <span id="standard-hourly-rate">0</span>/小时</p>
                     <p>标准月薪: <span id="standard-monthly-rate">0</span>/月</p>
                     <hr>
@@ -508,30 +546,45 @@
                                 </div>
                             </div>
                         </div>
-                        <p>全年工时：<span id="workday-hours">0</span>(工作日) + <span id="weekday-hours">0</span>(休息日)</p>
+                        <p>全年工时：<span id="workday-hours-normal">0</span>(正常工时) + <span id="workday-hours-overtime">0</span>(加班工时) + <span id="weekday-hours">0</span>(周末加班工时)</p>
                     </div>
                     <hr>
-                    <form class="form-inline">
+                    <div class="form-inline">
                         <div class="form-group">
-                            <label for="provident-fund-deposit-base">公积金缴存基数：</label>
+                            <label for="how-many-month-paid">全年发放：</label>
                             <div class="input-group">
-                                <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="provident-fund-deposit-base" placeholder="200000" step="100" min="2100" max="33786">
+                                <input type="number" class="form-control" id="how-many-month-paid" value="12" placeholder="12" step="0.5" min="12" max="24" onchange="calc();">
+                                <div class="input-group-addon">薪</div>
                             </div>
-<!--                            <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 965，12薪，公积金缴存比例12%，公积金缴存基数=月薪。你期望的年薪是多少？</span>-->
                         </div>
-                    </form>
+                    </div>
                     <p></p>
-                    <form class="form-inline">
+                    <div class="form-inline">
                         <div class="form-group">
-                            <label for="provident-fund-deposit-ratio">公积金缴存比例：</label>
+                            <label for="enterprise-provident-fund-deposit-ratio">公积金缴存比例 (公司)：</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="provident-fund-deposit-ratio" placeholder="12" step="1" min="5" max="12">
+                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" value="12" placeholder="12" step="1" min="5" max="12" onchange="calc();">
                                 <div class="input-group-addon">%</div>
                             </div>
-<!--                            <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 965，12薪，公积金缴存比例12%，公积金缴存基数=月薪。你期望的年薪是多少？</span>-->
                         </div>
-                    </form>
+                    </div>
+                    <p></p>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label for="enterprise-provident-fund-deposit-base">公积金缴存基数 (公司)：</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">￥</div>
+                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" value="2100" placeholder="200000" step="100" min="2100" max="33786" onchange="calc();">
+                            </div>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="is-same-fund-base" type="checkbox" onchange="calc();"> 与税前月薪一致
+                            </label>
+                        </div>
+                    </div>
+                    <br>
+                    <p>补正月薪：<span id="corrected-month-salary">0</span></p>
                 </div>
             </div>
         </div>
