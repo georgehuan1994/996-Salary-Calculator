@@ -18,7 +18,7 @@
 
     <style>
         body {
-            padding-top: 70px;
+            /*padding-top: 70px;*/
             background-color: #f5f5f5;
             font-size: 14px;
             line-height: 1.5;
@@ -68,14 +68,13 @@
             padding: 0;
         }
 
-
     </style>
 
     <script>
         let computing_mode = 965; // 965, 995, 995.5, 996, 0
         let is_single_week = true; // 是否为单周模式
 
-        let expected_year_salary = 200000; // 期望年薪，按 965 计算
+        let expected_year_salary = 300000; // 期望年薪，按 965 计算
         let standard_monthly_rate = 1; // 标准月薪，按 12 月计算
         let standard_hourly_rate = 1; // 标准时薪，按 965 计算
 
@@ -98,10 +97,11 @@
         let work_day_hours_normal = 0; // 工作日正常工时
         let work_day_hours_overtime = 0; // 工作日加班工时
         let week_day_hours = 0; // 休息日工时
+        let how_many_month_get_paid = 12; // 全年发放/月
         let deserved_year_salary = 0; // 应得年薪
         let deserved_month_salary = 0; // 应得月薪
-        let enterprise_provident_fund_deposit_ratio = 12; // 公积金缴存比例 (公司)
-        let enterprise_provident_fund_deposit_base = 2100; // 公积金缴存基数 (公司)
+        let enterprise_provident_fund_deposit_ratio = 5; // 公积金缴存比例 (公司)
+        let enterprise_provident_fund_deposit_base = 5000; // 公积金缴存基数 (公司)
 
         let corrected_month_salary = 0; // 补正月薪
 
@@ -231,30 +231,39 @@
 
             standard_monthly_rate = expected_year_salary / 12;
             standard_hourly_rate = expected_year_salary / (8 * 5 * 50);
-            $('#standard-hourly-rate').text(standard_hourly_rate.toFixed(2));
-            $('#standard-monthly-rate').text(standard_monthly_rate.toFixed(2));
+            $('#standard-hourly-rate').text(standard_hourly_rate.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
+            $('#standard-monthly-rate').text(standard_monthly_rate.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
 
             deserved_year_salary = standard_hourly_rate * (work_day_hours_normal + work_day_hours_overtime * 1.5 + week_day_hours * 2);
-            // console.log(deserved_year_salary)
+            $('#deserved-year-salary').text(deserved_year_salary.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
 
-            deserved_month_salary = deserved_year_salary / Number($('#how-many-month-paid').val());
-            $('#enterprise-provident-fund-deposit-base').prop('placeholder',deserved_month_salary.toFixed(0));
-            // console.log(deserved_month_salary.toFixed(0));
 
-            enterprise_provident_fund_deposit_ratio = parseInt($('#enterprise-provident-fund-deposit-ratio').val());
-            enterprise_provident_fund_deposit_base = parseInt($('#enterprise-provident-fund-deposit-base').val());
+            if ($('#how-many-month-paid').val() != '') {
+                how_many_month_get_paid = Number($('#how-many-month-paid').val());
+            }
+
+            deserved_month_salary = deserved_year_salary / how_many_month_get_paid;
+            $('#deserved-month-salary').text(deserved_month_salary.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
+
+            if ($('#enterprise-provident-fund-deposit-ratio').val() != '') {
+                enterprise_provident_fund_deposit_ratio = parseInt($('#enterprise-provident-fund-deposit-ratio').val());
+            }
+
+            if ($('#enterprise-provident-fund-deposit-base').val() != '') {
+                enterprise_provident_fund_deposit_base = parseInt($('#enterprise-provident-fund-deposit-base').val());
+            }
 
             if ($('#is-same-fund-base').prop('checked')) {
                 enterprise_provident_fund_deposit_base = corrected_month_salary = deserved_month_salary;
                 corrected_month_salary = deserved_month_salary + enterprise_provident_fund_deposit_base * (12 - enterprise_provident_fund_deposit_ratio) / 100
-                $('#enterprise-provident-fund-deposit-base').prop({'disabled':true,'placeholder':enterprise_provident_fund_deposit_base.toFixed(0),'value':deserved_month_salary});
+                $('#enterprise-provident-fund-deposit-base').prop({'disabled':true,'placeholder':enterprise_provident_fund_deposit_base.toFixed(0),'value':deserved_month_salary.toFixed(2)});
             }
             else {
                 corrected_month_salary = deserved_month_salary + enterprise_provident_fund_deposit_base * (12 - enterprise_provident_fund_deposit_ratio) / 100 + (deserved_month_salary - enterprise_provident_fund_deposit_base) * 0.12;
-                $('#enterprise-provident-fund-deposit-base').prop({'disabled':false,'placeholder':deserved_month_salary.toFixed(0)});
+                $('#enterprise-provident-fund-deposit-base').prop({'disabled':false});
             }
 
-            $('#corrected-month-salary').text(corrected_month_salary.toFixed(0));
+            $('#corrected-month-salary').text(corrected_month_salary.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
         }
 
         function set_progress(id, value) {
@@ -343,7 +352,7 @@
 
 <body>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-inverse" style="border-radius: 0;">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
@@ -378,17 +387,21 @@
                             <label for="expected-year-salary">期望年薪：</label>
                             <div class="input-group">
                                 <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="expected-year-salary" placeholder="200000" step="1000" min="1000" onchange="calc();">
+                                <input type="number" class="form-control" id="expected-year-salary" placeholder="300000" step="1000" min="1000" onchange="calc();">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">-</button>
+                                    <button class="btn btn-default" type="button">+</button>
+                                </span>
                             </div>
-                            <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 965，12薪，公积金缴存比例12%，公积金缴存基数=月薪。你期望的年薪是多少？</span>
+                            <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 按「965、12薪、满额公积金」的标准，期望获得的税前年薪</span>
                         </div>
                     </div>
-                    <p>标准时薪: <span id="standard-hourly-rate">0</span>/小时</p>
-                    <p>标准月薪: <span id="standard-monthly-rate">0</span>/月</p>
+                    <p>标准时薪：<span id="standard-hourly-rate" style="color: coral;font-weight: 550">0</span> /小时</p>
+                    <p>标准月薪：<span id="standard-monthly-rate" style="color: coral;font-weight: 550">0</span> /月</p>
                     <hr>
                     <div id="working-hours">
                         <label for="working-hours">每日工时：</label>
-
+                        <br>
                         <label class="radio-inline">
                             <input type="radio" name="inlineRadioOptions" id="9-6-5" value="option1" checked onclick="set_working_days(965);"> 965
                         </label>
@@ -404,156 +417,161 @@
                         <label class="radio-inline">
                             <input type="radio" name="inlineRadioOptions" id="custom" value="option5" onclick="set_working_days(0);"> 自定义
                         </label>
-
+                        <p></p>
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <ul class="nav nav-tabs" role="tablist">
-                                    <li role="presentation" id="single-week-tab" class="active"><a class="btn btn-link" aria-controls="single-week" role="tab" data-toggle="tab" onclick="show_double_week(false)">单周</a></li>
-                                    <li role="presentation" id="double-week-tab"               ><a class="btn btn-link" aria-controls="double-week" role="tab" data-toggle="tab" onclick="show_double_week(true)">大小周</a></li>
+                                    <li role="presentation" id="single-week-tab" class="active"><a class="btn btn-link" aria-controls="single-week" role="tab" data-toggle="tab" onclick="show_double_week(false);calc();$('#custom').prop('checked',true);">按单周</a></li>
+                                    <li role="presentation" id="double-week-tab"               ><a class="btn btn-link" aria-controls="double-week" role="tab" data-toggle="tab" onclick="show_double_week(true);calc();$('#custom').prop('checked',true);">按大小周</a></li>
                                 </ul>
                                 <br>
                                 <div class="row" id="single-week">
                                     <!-- 周一（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-mon'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-mon'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-mon" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-mon'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-mon'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">MON</p>
                                     </div>
                                     <!-- 周二（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-tue'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-tue'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-tue" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-tue'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-tue'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">TUE</p>
                                     </div>
                                     <!-- 周三（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-wed'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-wed'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-wed" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-wed'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-wed'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">WED</p>
                                     </div>
                                     <!-- 周四（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-thu'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-thu'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-thu" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-thu'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-thu'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">THU</p>
                                     </div>
                                     <!-- 周五（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-fri'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-fri'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-fri" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-fri'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-fri'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">FRI</p>
                                     </div>
                                     <!-- 周六（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-sat'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-sat'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-sat" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-sat'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-sat'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">SAT</p>
                                     </div>
                                     <!-- 周日（单） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-sun'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#s-sun'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="s-sun" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-sun'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#s-sun'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">SUN</p>
                                     </div>
                                 </div>
 
                                 <div class="row hidden" id="double-week">
-                                    <br>
+                                    <p></p>
                                     <!-- 周一（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-mon'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-mon'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-mon" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-mon'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-mon'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">MON</p>
                                     </div>
                                     <!-- 周二（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-tue'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-tue'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-tue" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-tue'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-tue'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">TUE</p>
                                     </div>
                                     <!-- 周三（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-wed'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-wed'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-wed" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-wed'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-wed'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">WED</p>
                                     </div>
                                     <!-- 周四（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-thu'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-thu'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-thu" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-thu'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-thu'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">THU</p>
                                     </div>
                                     <!-- 周五（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-fri'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-fri'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-fri" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-fri'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-fri'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">FRI</p>
                                     </div>
                                     <!-- 周六（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-sat'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-sat'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-sat" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg);color: #000;">0</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-sat'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-sat'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">SAT</p>
                                     </div>
                                     <!-- 周日（双） -->
                                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-sun'));">+</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="add_progress($('#d-sun'));"><p style="margin-top: -1px">+</p></button>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" id="d-sun" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg);color: #000;">0</p></div>
                                         </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-sun'))">-</button>
+                                        <button class="btn btn-default ctrl" type="button" onclick="reduce_progress($('#d-sun'))"><p style="margin-top: -2px">-</p></button>
                                         <p class="small">SUN</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <p>全年工时：<span id="workday-hours-normal">0</span>(正常工时) + <span id="workday-hours-overtime">0</span>(加班工时) + <span id="weekday-hours">0</span>(周末加班工时)</p>
+                        <p>全年工作日正常工时：<span id="workday-hours-normal" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
+                        <p>全年工作日加班工时：<span id="workday-hours-overtime" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
+                        <p>全年休息日加班工时：<span id="weekday-hours" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
+                        <hr>
+                        <p>应得年薪：<span id="deserved-year-salary" style="color: coral;font-weight: 550">0</span> /年</p>
+                        <p>应得月薪：<span id="deserved-month-salary" style="color: coral;font-weight: 550">0</span> /月</p>
                     </div>
                     <hr>
                     <div class="form-inline">
                         <div class="form-group">
                             <label for="how-many-month-paid">全年发放：</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="how-many-month-paid" value="12" placeholder="12" step="0.5" min="12" max="24" onchange="calc();">
+                            <div class="input-group" style="max-width: 70%">
+                                <input type="number" class="form-control" id="how-many-month-paid" placeholder="12" step="0.5" min="12" max="24" onchange="calc();">
                                 <div class="input-group-addon">薪</div>
                             </div>
                         </div>
@@ -563,7 +581,7 @@
                         <div class="form-group">
                             <label for="enterprise-provident-fund-deposit-ratio">公积金缴存比例 (公司)：</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" value="12" placeholder="12" step="1" min="5" max="12" onchange="calc();">
+                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" placeholder="5" step="1" min="5" max="12" onchange="calc();">
                                 <div class="input-group-addon">%</div>
                             </div>
                         </div>
@@ -574,7 +592,7 @@
                             <label for="enterprise-provident-fund-deposit-base">公积金缴存基数 (公司)：</label>
                             <div class="input-group">
                                 <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" value="2100" placeholder="200000" step="100" min="2100" max="33786" onchange="calc();">
+                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" placeholder="5000" step="100" min="2100" max="33786" onchange="calc();">
                             </div>
                         </div>
                         <div class="checkbox">
@@ -584,7 +602,7 @@
                         </div>
                     </div>
                     <br>
-                    <p>补正月薪：<span id="corrected-month-salary">0</span></p>
+                    <p>补正月薪：<span id="corrected-month-salary" style="color: coral;font-weight: 550">0</span> /月</p>
                 </div>
             </div>
         </div>
