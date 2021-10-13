@@ -118,19 +118,19 @@
             computing_mode = mode;
             if (computing_mode === 965) {
                 show_double_week(false);
-                set_progress($('#s-mon'), s_mon = 8);
-                set_progress($('#s-tue'), s_tue = 8);
-                set_progress($('#s-wed'), s_wed = 8);
-                set_progress($('#s-thu'), s_thu = 8);
-                set_progress($('#s-fri'), s_fri = 8);
+                set_progress($('#s-mon'), s_mon = 9);
+                set_progress($('#s-tue'), s_tue = 9);
+                set_progress($('#s-wed'), s_wed = 9);
+                set_progress($('#s-thu'), s_thu = 9);
+                set_progress($('#s-fri'), s_fri = 9);
                 set_progress($('#s-sat'), s_sat = 0);
                 set_progress($('#s-sun'), s_sun = 0);
 
-                set_progress($('#d-mon'), d_mon = 8);
-                set_progress($('#d-tue'), d_tue = 8);
-                set_progress($('#d-wed'), d_wed = 8);
-                set_progress($('#d-thu'), d_thu = 8);
-                set_progress($('#d-fri'), d_fri = 8);
+                set_progress($('#d-mon'), d_mon = 9);
+                set_progress($('#d-tue'), d_tue = 9);
+                set_progress($('#d-wed'), d_wed = 9);
+                set_progress($('#d-thu'), d_thu = 9);
+                set_progress($('#d-fri'), d_fri = 9);
                 set_progress($('#d-sat'), d_sat = 0);
                 set_progress($('#d-sun'), d_sun = 0);
             }
@@ -212,7 +212,7 @@
 
             if (is_single_week){
                 let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri;
-                work_day_hours_normal = (_WorkDayHourTotal<=40 ? _WorkDayHourTotal : 40) * 50;
+                work_day_hours_normal = (_WorkDayHourTotal<=45 ? _WorkDayHourTotal : 45) * 50;
                 work_day_hours_overtime = _WorkDayHourTotal * 50 - work_day_hours_normal;
                 week_day_hours = (s_sat + s_sun) * 50;
                 $('#workday-hours-normal').text(work_day_hours_normal);
@@ -221,7 +221,7 @@
             }
             else {
                 let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri + d_mon + d_tue + d_wed + d_thu + d_fri;
-                work_day_hours_normal = (_WorkDayHourTotal<=80 ? _WorkDayHourTotal : 80) * 25;
+                work_day_hours_normal = (_WorkDayHourTotal<=90 ? _WorkDayHourTotal : 80) * 25;
                 work_day_hours_overtime = _WorkDayHourTotal * 25 - work_day_hours_normal;
                 week_day_hours = (s_sat + s_sun + d_sat + d_sun) * 25;
                 $('#workday-hours-normal').text(work_day_hours_normal);
@@ -234,7 +234,7 @@
             }
 
             standard_monthly_rate = expected_year_salary / 12;
-            standard_hourly_rate = expected_year_salary / (8 * 5 * 50);
+            standard_hourly_rate = expected_year_salary / (9 * 5 * 50);
             $('#standard-hourly-rate').text(standard_hourly_rate.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
             $('#standard-monthly-rate').text(standard_monthly_rate.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
 
@@ -268,6 +268,24 @@
             }
 
             $('#corrected-month-salary').text(corrected_month_salary.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
+        }
+
+        function check_expected_year_salary() {
+            if (parseInt($('#expected-year-salary').val()) < 25200 ) {
+                $('#expected-year-salary').val(25200);
+                expected_year_salary = 25200;
+            }
+        }
+
+        function set_expected_year_salary(value) {
+            if ($('#expected-year-salary').val() == '') {
+                expected_year_salary = parseInt($('#expected-year-salary').attr('placeholder'));
+            }
+            expected_year_salary += value;
+            if (expected_year_salary < 25200 ) {
+                expected_year_salary = 25200;
+            }
+            $('#expected-year-salary').val(expected_year_salary);
         }
 
         function set_progress(id, value) {
@@ -383,7 +401,7 @@
 
 <main class="container">
     <div class="row">
-        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+        <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="form-inline">
@@ -391,10 +409,10 @@
                             <label for="expected-year-salary">期望年薪：</label>
                             <div class="input-group">
                                 <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="expected-year-salary" placeholder="300000" step="1000" min="1000" onchange="calc();">
+                                <input type="number" class="form-control" id="expected-year-salary" placeholder="300000" step="10000" onchange="check_expected_year_salary();calc();">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">-</button>
-                                    <button class="btn btn-default" type="button">+</button>
+                                    <button class="btn btn-default" type="button" onclick="set_expected_year_salary(-10000);calc();">-</button>
+                                    <button class="btn btn-default" type="button" onclick="set_expected_year_salary(10000);calc();">+</button>
                                 </span>
                             </div>
                             <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 按「965、12薪、满额公积金」的标准，期望获得的税前年薪</span>
@@ -576,7 +594,9 @@
                             <label for="how-many-month-paid">全年发放：</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="how-many-month-paid" placeholder="12" step="0.5" min="12" max="24" onchange="calc();">
-                                <div class="input-group-addon">薪</div>
+                                <div class="input-group-addon" style="border-width:1px 0px">薪</div>
+                                <div class="input-group-addon btn btn-default" style="background-color: white">-</div>
+                                <div class="input-group-addon btn btn-default" style="background-color: white">+</div>
                             </div>
                         </div>
                     </div>
@@ -586,7 +606,9 @@
                             <label for="enterprise-provident-fund-deposit-ratio">公积金缴存比例 (公司)：</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" placeholder="5" step="1" min="5" max="12" onchange="calc();">
-                                <div class="input-group-addon">%</div>
+                                <div class="input-group-addon" style="border-width:1px 0px">%</div>
+                                <div class="input-group-addon btn btn-default" style="background-color: white">-</div>
+                                <div class="input-group-addon btn btn-default" style="background-color: white">+</div>
                             </div>
                         </div>
                     </div>
@@ -597,6 +619,10 @@
                             <div class="input-group">
                                 <div class="input-group-addon">￥</div>
                                 <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" placeholder="5000" step="100" min="2100" max="33786" onchange="calc();">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onclick="">-</button>
+                                    <button class="btn btn-default" type="button" onclick="">+</button>
+                                </span>
                             </div>
                         </div>
                         <div class="checkbox">
