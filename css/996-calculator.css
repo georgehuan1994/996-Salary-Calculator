@@ -17,6 +17,10 @@ a:hover {
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
 }
 
+.navbar {
+    border-radius: 0;
+}
+
 .navbar-nav > li > a {
     padding-top: 17px;
     padding-bottom: 13px;
@@ -47,4 +51,32 @@ a:hover {
     width: 26px;
     height: 20px;
     padding: 0;
+}
+
+.result-box {
+    position: relative;
+    z-index: 10;
+    bottom: 0;
+}
+
+.result-box-flex {
+    position: fixed;
+    z-index: 999;
+    width: calc(100% - 63px);
+}
+
+@media (min-width: 768px) {
+    .result-box-flex {
+        width: 687px;
+    }
+}
+@media (min-width: 992px) {
+    .result-box-flex {
+        width: 584px;
+    }
+}
+@media (min-width: 1200px) {
+    .result-box-flex {
+        width: 717px;
+    }
 }

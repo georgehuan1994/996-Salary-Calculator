@@ -37,6 +37,32 @@ $(window).ready(function(){
     set_working_days(computing_mode);
 });
 
+$(document).scroll(function (){
+    let docT = $(document).scrollTop();
+    // console.log('scrollTop: '+ docT);
+
+    let docH = $(window).height();
+    // console.log('docH: '+ docH);
+
+    let resultbox = $('#result-pos').offset();
+    let t = resultbox.top;
+    // console.log('top: '+ t);
+
+    let h = $('#result-pos').height();
+    // console.log('height: '+ h);
+
+    let isEntirelyVisible = ((t) < (docH + docT));
+    // console.log(isEntirelyVisible);
+    // console.log('---------------');
+
+    if (isEntirelyVisible) {
+        $('#result-box').removeClass('result-box-flex');
+    }
+    else {
+        $('#result-box').addClass('result-box-flex');
+    }
+});
+
 function set_working_days(mode) {
     computing_mode = mode;
     if (computing_mode === 965) {
@@ -183,7 +209,7 @@ function calc() {
     if ($('#is-same-fund-base').prop('checked')) {
         enterprise_provident_fund_deposit_base = corrected_month_salary = deserved_month_salary;
         corrected_month_salary = deserved_month_salary + enterprise_provident_fund_deposit_base * (12 - enterprise_provident_fund_deposit_ratio) / 100
-        $('#enterprise-provident-fund-deposit-base').prop({'disabled':true,'placeholder':enterprise_provident_fund_deposit_base.toFixed(0),'value':deserved_month_salary.toFixed(2)});
+        $('#enterprise-provident-fund-deposit-base').prop({'disabled':true,'placeholder':enterprise_provident_fund_deposit_base.toFixed(0),'value':deserved_month_salary});
     }
     else {
         corrected_month_salary = deserved_month_salary + enterprise_provident_fund_deposit_base * (12 - enterprise_provident_fund_deposit_ratio) / 100 + (deserved_month_salary - enterprise_provident_fund_deposit_base) * 0.12;
@@ -211,37 +237,116 @@ function set_expected_year_salary(value) {
     $('#expected-year-salary').val(expected_year_salary);
 }
 
+function check_how_many_month_get_paid() {
+    if (parseInt($('#how-many-month-paid').val()) < 12 ) {
+        $('#how-many-month-paid').val(12);
+        how_many_month_get_paid = 12;
+    }
+}
+
+function set_how_many_month_get_paid(value) {
+    if ($('#how-many-month-paid').val() == '') {
+        how_many_month_get_paid = parseInt($('#how-many-month-paid').attr('placeholder'));
+    }
+    how_many_month_get_paid += value;
+    if (how_many_month_get_paid < 12) {
+        how_many_month_get_paid = 12;
+    }
+    $('#how-many-month-paid').val(how_many_month_get_paid);
+}
+
+function check_fund_ratio() {
+    if (parseInt($('#enterprise-provident-fund-deposit-ratio').val()) < 5 ) {
+        $('#enterprise-provident-fund-deposit-ratio').val(5);
+        enterprise_provident_fund_deposit_ratio = 5;
+    }
+
+    if (parseInt($('#enterprise-provident-fund-deposit-ratio').val()) > 12 ) {
+        $('#enterprise-provident-fund-deposit-ratio').val(12);
+        enterprise_provident_fund_deposit_ratio = 12;
+    }
+}
+
+function set_fund_ratio(value) {
+    if ($('#enterprise-provident-fund-deposit-ratio').val() == '') {
+        enterprise_provident_fund_deposit_ratio = parseInt($('#enterprise-provident-fund-deposit-ratio').attr('placeholder'));
+    }
+    enterprise_provident_fund_deposit_ratio += value;
+    if (enterprise_provident_fund_deposit_ratio < 5) {
+        enterprise_provident_fund_deposit_ratio = 5;
+    }
+    if (enterprise_provident_fund_deposit_ratio > 12) {
+        enterprise_provident_fund_deposit_ratio = 12;
+    }
+    $('#enterprise-provident-fund-deposit-ratio').val(enterprise_provident_fund_deposit_ratio);
+}
+
+function check_fund_base() {
+    if (parseInt($('#enterprise-provident-fund-deposit-base').val()) < 2100) {
+        $('#enterprise-provident-fund-deposit-base').val(2100);
+        enterprise_provident_fund_deposit_base = 2100;
+    }
+
+    if (parseInt($('#enterprise-provident-fund-deposit-base').val()) > 33786) {
+        $('#enterprise-provident-fund-deposit-base').val(33786);
+        enterprise_provident_fund_deposit_base = 33786;
+    }
+
+    if (!$('#is-same-fund-base').prop('checked')) {
+        $('#enterprise-provident-fund-deposit-base').data('lastValue', enterprise_provident_fund_deposit_base);
+    }
+}
+
+function set_fund_base(value) {
+    if ($('#enterprise-provident-fund-deposit-base').val() == '') {
+        enterprise_provident_fund_deposit_base = parseInt($('#enterprise-provident-fund-deposit-base').attr('placeholder'));
+    }
+    enterprise_provident_fund_deposit_base += value;
+    if (enterprise_provident_fund_deposit_base < 2100) {
+        enterprise_provident_fund_deposit_base = 2100;
+    }
+    if (enterprise_provident_fund_deposit_base > 33786) {
+        enterprise_provident_fund_deposit_base = 33786;
+    }
+    $('#enterprise-provident-fund-deposit-base').val(enterprise_provident_fund_deposit_base);
+
+    if (!$('#is-same-fund-base').prop('checked')) {
+        $('#enterprise-provident-fund-deposit-base').data('lastValue', enterprise_provident_fund_deposit_base);
+    }
+}
+
+function is_same_fund_base_onchange() {
+    if (!$('#is-same-fund-base').prop('checked')) {
+        enterprise_provident_fund_deposit_base = $('#enterprise-provident-fund-deposit-base').data('lastValue');
+        if (enterprise_provident_fund_deposit_base == undefined) {
+            enterprise_provident_fund_deposit_base = 5000;
+        }
+        $('#enterprise-provident-fund-deposit-base').val(enterprise_provident_fund_deposit_base);
+    }
+}
+
+function set_work_time(bar, value) {
+    $('#custom').prop("checked",true);
+    let _valuenow = parseInt(bar.attr('aria-valuenow'));
+    _valuenow += value;
+    if (_valuenow > 24) {
+        _valuenow = 24;
+    }
+    if (_valuenow < 0) {
+        _valuenow = 0;
+    }
+    bar.attr('aria-valuenow', _valuenow);
+    bar.css('height',toPercent(_valuenow / 24));
+    bar.children("p").text(_valuenow);
+    set_progress_color(bar, _valuenow);
+    calc();
+}
+
 function set_progress(id, value) {
     id.attr('aria-valuenow', value);
     id.css('height',toPercent(value / 24));
     id.children("p").text(value);
     set_progress_color(id,value);
-}
-
-function add_progress(id) {
-    $('#custom').prop("checked",true);
-    let now = parseInt(id.attr('aria-valuenow'));
-    if (now >= 24) {
-        set_progress(id, 24);
-    }
-    else {
-        now = now + 1
-        set_progress(id, now);
-    }
-    calc();
-}
-
-function reduce_progress(id) {
-    $('#custom').prop("checked",true);
-    let now = parseInt(id.attr('aria-valuenow'));
-    if (now <= 0) {
-        set_progress(id, 0);
-    }
-    else {
-        now = now - 1
-        set_progress(id, now);
-    }
-    calc();
 }
 
 function toPercent(point) {
