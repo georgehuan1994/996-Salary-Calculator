@@ -1,3 +1,6 @@
+<!-- Any Localization - © 2020-2021 George Huan. All rights reserved -->
+<!-- https://github.com/georgehuan1994/996-Salary-Calculator -->
+
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -6,9 +9,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link type="favicon" rel="shortcut icon" href="images/favicon.ico">
-    <title>996 薪资计算器</title>
+    <title>996 薪资计算助手</title>
 
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            /*padding-top: 70px;*/
+            background-color: #f5f5f5;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 400;
+            color: #24292f;
+            text-rendering: optimizeLegibility;
+        }
+
+        a:hover {
+            color: #fff;
+            background-color: #444;
+            -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            -moz-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+        }
+
+        .navbar {
+            border-radius: 0;
+        }
+
+        .navbar-nav > li > a {
+            padding-top: 17px;
+            padding-bottom: 13px;
+        }
+
+    </style>
     <link rel="stylesheet" href="css/996-calculator.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -30,7 +63,7 @@
             </a>
             <a class="navbar-brand" href="/"
                style="color: white;letter-spacing: -0.04rem;line-height: 20px;">
-                996 薪资计算器
+                996 薪资计算助手
             </a>
         </div>
         <div class="collapse navbar-collapse" role="navigation" id="navbar-collapse">
@@ -47,243 +80,247 @@
         <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-body" style="padding-bottom: 0">
-                    <div class="form-inline">
-                        <div class="form-group">
-                            <label for="expected-year-salary">期望年薪：</label>
-                            <div class="input-group">
-                                <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="expected-year-salary" placeholder="300000" step="10000" onchange="check_expected_year_salary();calc();">
-                                <span class="input-group-btn">
+                <!-- start -->
+                    <div>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="expected-year-salary">期望年薪：</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">￥</div>
+                                    <input type="number" class="form-control" id="expected-year-salary" placeholder="300000" step="10000" onchange="check_expected_year_salary();calc();">
+                                    <span class="input-group-btn">
                                     <button class="btn btn-default" type="button" onclick="set_expected_year_salary(-10000);calc();">-</button>
                                     <button class="btn btn-default" type="button" onclick="set_expected_year_salary(10000);calc();">+</button>
                                 </span>
-                            </div>
-                            <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 按「965、12薪、满额公积金」的标准，期望获得的税前年薪</span>
-                        </div>
-                    </div>
-                    <p>标准时薪：<span id="standard-hourly-rate" style="color: coral;font-weight: 550">0</span> /小时</p>
-                    <p>标准月薪：<span id="standard-monthly-rate" style="color: coral;font-weight: 550">0</span> /月</p>
-                    <hr>
-                    <div id="working-hours">
-                        <label for="working-hours">每日工时：</label>
-                        <br>
-                        <label class="radio-inline">
-                            <input type="radio" name="inlineRadioOptions" id="9-6-5" value="option1" checked onclick="set_working_days(965);"> 965
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="inlineRadioOptions" id="9-9-5" value="option2" onclick="set_working_days(995);"> 995
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="inlineRadioOptions" id="9-9-5.5" value="option3" onclick="set_working_days(995.5);"> 995.5
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="inlineRadioOptions" id="9-9-6" value="option4" onclick="set_working_days(996);"> 996
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="inlineRadioOptions" id="custom" value="option5" onclick="set_working_days(0);"> 自定义
-                        </label>
-                        <p></p>
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <ul class="nav nav-tabs" role="tablist">
-                                    <li role="presentation" id="single-week-tab" class="active"><a class="btn btn-link" aria-controls="single-week" role="tab" data-toggle="tab" onclick="show_double_week(false);calc();$('#custom').prop('checked',true);">按单周</a></li>
-                                    <li role="presentation" id="double-week-tab"               ><a class="btn btn-link" aria-controls="double-week" role="tab" data-toggle="tab" onclick="show_double_week(true);calc();$('#custom').prop('checked',true);">按大小周</a></li>
-                                </ul>
-                                <br>
-                                <div class="row" id="single-week">
-                                    <!-- 周一（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-mon'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-mon" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-mon'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">MON</p>
-                                    </div>
-                                    <!-- 周二（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-tue'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-tue" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-tue'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">TUE</p>
-                                    </div>
-                                    <!-- 周三（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-wed'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-wed" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-wed'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">WED</p>
-                                    </div>
-                                    <!-- 周四（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-thu'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-thu" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-thu'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">THU</p>
-                                    </div>
-                                    <!-- 周五（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-fri'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-fri" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-fri'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">FRI</p>
-                                    </div>
-                                    <!-- 周六（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sat'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-sat" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sat'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">SAT</p>
-                                    </div>
-                                    <!-- 周日（单） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sun'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="s-sun" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sun'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">SUN</p>
-                                    </div>
                                 </div>
-
-                                <div class="row hidden" id="double-week">
-                                    <p></p>
-                                    <!-- 周一（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-mon'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-mon" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-mon'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">MON</p>
-                                    </div>
-                                    <!-- 周二（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-tue'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-tue" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-tue'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">TUE</p>
-                                    </div>
-                                    <!-- 周三（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-wed'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-wed" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-wed'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">WED</p>
-                                    </div>
-                                    <!-- 周四（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-thu'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-thu" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-thu'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">THU</p>
-                                    </div>
-                                    <!-- 周五（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-fri'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-fri" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-fri'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">FRI</p>
-                                    </div>
-                                    <!-- 周六（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sat'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-sat" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg);color: #000;">0</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sat'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">SAT</p>
-                                    </div>
-                                    <!-- 周日（双） -->
-                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sun'),1);"><p style="margin-top: -2px">+</p></button>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar" id="d-sun" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg);color: #000;">0</p></div>
-                                        </div>
-                                        <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sun'),-1)"><p style="margin-top: -2px">-</p></button>
-                                        <p class="small">SUN</p>
-                                    </div>
-                                </div>
+                                <span class="help-block"><i class="glyphicon glyphicon-question-sign"></i> 按「965、12薪、满额公积金」的标准，期望获得的税前年薪</span>
                             </div>
                         </div>
-                        <p>全年工作日正常工时：<span id="workday-hours-normal" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
-                        <p>全年工作日加班工时：<span id="workday-hours-overtime" style="color: #f0ad4e;font-weight: 550">0</span> 小时</p>
-                        <p>全年休息日加班工时：<span id="weekday-hours" style="color: #d9534f;font-weight: 550">0</span> 小时</p>
+                        <p>标准时薪：<span id="standard-hourly-rate" style="color: coral;font-weight: 550">0</span> /小时</p>
+                        <p>标准月薪：<span id="standard-monthly-rate" style="color: coral;font-weight: 550">0</span> /月</p>
                         <hr>
-                        <p>应得年薪：<span id="deserved-year-salary" style="color: coral;font-weight: 550">0</span> /年</p>
-                        <p>应得月薪：<span id="deserved-month-salary" style="color: coral;font-weight: 550">0</span> /月</p>
-                    </div>
-                    <hr>
-                    <div class="form-inline">
-                        <div class="form-group">
-                            <label for="how-many-month-paid">全年发放：</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="how-many-month-paid" placeholder="12" step="0.5" min="12" max="24" onchange="check_how_many_month_get_paid();calc();">
-                                <div class="input-group-addon" style="border-width:1px 0px">薪</div>
-                                <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_how_many_month_get_paid(-0.5);calc();">-</div>
-                                <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_how_many_month_get_paid(0.5);calc();">+</div>
+                        <div id="working-hours">
+                            <label for="working-hours">每日工时：</label>
+                            <br>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="9-6-5" value="option1" checked onclick="set_working_days(965);"> 965
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="9-9-5" value="option2" onclick="set_working_days(995);"> 995
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="9-9-5.5" value="option3" onclick="set_working_days(995.5);"> 995.5
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="9-9-6" value="option4" onclick="set_working_days(996);"> 996
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="custom" value="option5" onclick="set_working_days(0);"> 自定义
+                            </label>
+                            <p></p>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" id="single-week-tab" class="active"><a class="btn btn-link" aria-controls="single-week" role="tab" data-toggle="tab" onclick="show_double_week(false);calc();$('#custom').prop('checked',true);">按单周</a></li>
+                                        <li role="presentation" id="double-week-tab"               ><a class="btn btn-link" aria-controls="double-week" role="tab" data-toggle="tab" onclick="show_double_week(true);calc();$('#custom').prop('checked',true);">按大小周</a></li>
+                                    </ul>
+                                    <br>
+                                    <div class="row" id="single-week">
+                                        <!-- 周一（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-mon'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-mon" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-mon'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">MON</p>
+                                        </div>
+                                        <!-- 周二（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-tue'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-tue" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-tue'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">TUE</p>
+                                        </div>
+                                        <!-- 周三（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-wed'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-wed" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-wed'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">WED</p>
+                                        </div>
+                                        <!-- 周四（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-thu'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-thu" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-thu'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">THU</p>
+                                        </div>
+                                        <!-- 周五（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-fri'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-fri" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-fri'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">FRI</p>
+                                        </div>
+                                        <!-- 周六（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sat'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-sat" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sat'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">SAT</p>
+                                        </div>
+                                        <!-- 周日（单） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sun'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="s-sun" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#s-sun'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">SUN</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row hidden" id="double-week">
+                                        <p></p>
+                                        <!-- 周一（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-mon'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-mon" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-mon'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">MON</p>
+                                        </div>
+                                        <!-- 周二（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-tue'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-tue" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-tue'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">TUE</p>
+                                        </div>
+                                        <!-- 周三（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-wed'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-wed" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-wed'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">WED</p>
+                                        </div>
+                                        <!-- 周四（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-thu'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-thu" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-thu'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">THU</p>
+                                        </div>
+                                        <!-- 周五（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-fri'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-fri" aria-valuenow="8" aria-valuemin="0" aria-valuemax="24" style="height: 33.33%;"><p style="transform: rotate(180deg)">8</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-fri'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">FRI</p>
+                                        </div>
+                                        <!-- 周六（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sat'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-sat" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg);color: #000;">0</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sat'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">SAT</p>
+                                        </div>
+                                        <!-- 周日（双） -->
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sun'),1);"><p style="margin-top: -2px">+</p></button>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" id="d-sun" aria-valuenow="0" aria-valuemin="0" aria-valuemax="24" style="height: 0%;"><p style="transform: rotate(180deg);color: #000;">0</p></div>
+                                            </div>
+                                            <button class="btn btn-default ctrl" type="button" onclick="set_work_time($('#d-sun'),-1)"><p style="margin-top: -2px">-</p></button>
+                                            <p class="small">SUN</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>全年工作日正常工时：<span id="workday-hours-normal" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
+                            <p>全年工作日加班工时：<span id="workday-hours-overtime" style="color: #f0ad4e;font-weight: 550">0</span> 小时</p>
+                            <p>全年休息日加班工时：<span id="weekday-hours" style="color: #d9534f;font-weight: 550">0</span> 小时</p>
+                            <hr>
+                            <p>应得年薪：<span id="deserved-year-salary" style="color: coral;font-weight: 550">0</span> /年</p>
+                            <p>应得月薪：<span id="deserved-month-salary" style="color: coral;font-weight: 550">0</span> /月</p>
+                        </div>
+                        <hr>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="how-many-month-paid">全年发放：</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="how-many-month-paid" placeholder="12" step="0.5" min="12" max="24" onchange="check_how_many_month_get_paid();calc();">
+                                    <div class="input-group-addon" style="border-width:1px 0px">薪</div>
+                                    <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_how_many_month_get_paid(-0.5);calc();">-</div>
+                                    <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_how_many_month_get_paid(0.5);calc();">+</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <p></p>
-                    <div class="form-inline">
-                        <div class="form-group">
-                            <label for="enterprise-provident-fund-deposit-ratio">公积金缴存比例 (公司)：</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" placeholder="5" step="1" min="5" max="12" onchange="check_fund_ratio();calc();">
-                                <div class="input-group-addon" style="border-width:1px 0px">%</div>
-                                <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_fund_ratio(-1);calc();">-</div>
-                                <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_fund_ratio(1);calc();">+</div>
+                        <p></p>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="enterprise-provident-fund-deposit-ratio">公积金缴存比例 (公司)：</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" placeholder="5" step="1" min="5" max="12" onchange="check_fund_ratio();calc();">
+                                    <div class="input-group-addon" style="border-width:1px 0px">%</div>
+                                    <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_fund_ratio(-1);calc();">-</div>
+                                    <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_fund_ratio(1);calc();">+</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <p></p>
-                    <div class="form-inline">
-                        <div class="form-group">
-                            <label for="enterprise-provident-fund-deposit-base">公积金缴存基数 (公司)：</label>
-                            <div class="input-group">
-                                <div class="input-group-addon">￥</div>
-                                <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" placeholder="5000" step="100" min="2100" max="33786" onchange="check_fund_base();calc();">
-                                <span class="input-group-btn">
+                        <p></p>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="enterprise-provident-fund-deposit-base">公积金缴存基数 (公司)：</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">￥</div>
+                                    <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" placeholder="5000" step="100" min="2100" max="33786" onchange="check_fund_base();calc();">
+                                    <span class="input-group-btn">
                                     <button class="btn btn-default" type="button" onclick="set_fund_base(-100);calc();">-</button>
                                     <button class="btn btn-default" type="button" onclick="set_fund_base(100);calc();">+</button>
                                 </span>
+                                </div>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="is-same-fund-base" type="checkbox" onchange="is_same_fund_base_onchange();calc();"> 与税前月薪一致 (下限：2100，上限：33786)
+                                </label>
                             </div>
                         </div>
-                        <div class="checkbox">
-                            <label>
-                                <input id="is-same-fund-base" type="checkbox" onchange="is_same_fund_base_onchange();calc();"> 与税前月薪一致 (下限：2100，上限：33786)
-                            </label>
-                        </div>
-                    </div>
-                    <br>
-                    <div id="result-pos">
-                        <div id="result-box" class="result-box">
-                            <div class="panel panel-default" style="margin: 0 -15px 0 -15px;border-radius: 0;border-width: 1px 0 0 0">
-                                <div class="panel-body" style="font-size: 1.1em;background-color: #fafafa">
-                                    <strong>补正月薪：</strong><span id="corrected-month-salary" style="color: coral;font-weight: 550">0</span> /月
+                        <br>
+                        <div id="result-pos">
+                            <div id="result-box" class="result-box">
+                                <div class="panel panel-default" style="margin: 0 -15px 0 -15px;border-radius: 0;border-width: 1px 0 0 0">
+                                    <div class="panel-body" style="font-size: 1.1em;background-color: #fafafa">
+                                        <strong>补正月薪：</strong><span id="corrected-month-salary" style="color: coral;font-weight: 550">0</span> /月
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                <!-- end -->
                 </div>
             </div>
         </div>
