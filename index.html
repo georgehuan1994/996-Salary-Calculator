@@ -35,7 +35,8 @@
         </div>
         <div class="collapse navbar-collapse" role="navigation" id="navbar-collapse">
             <ul class="nav navbar-nav navbar-right" style="font-size: 16px;">
-                <li><a href=""><i class="glyphicon glyphicon-envelope"></i> 分享</a></li>
+<!--                <li><a href=""><i class="glyphicon glyphicon-envelope"></i> Github</a></li>-->
+<!--                <li><a href=""><i class="glyphicon glyphicon-envelope"></i> 分享</a></li>-->
             </ul>
         </div>
     </div>
@@ -43,9 +44,9 @@
 
 <main class="container">
     <div class="row">
-        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+        <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
             <div class="panel panel-default">
-                <div class="panel-body">
+                <div class="panel-body" style="padding-bottom: 0">
                     <div class="form-inline">
                         <div class="form-group">
                             <label for="expected-year-salary">期望年薪：</label>
@@ -224,8 +225,8 @@
                             </div>
                         </div>
                         <p>全年工作日正常工时：<span id="workday-hours-normal" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
-                        <p>全年工作日加班工时：<span id="workday-hours-overtime" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
-                        <p>全年休息日加班工时：<span id="weekday-hours" style="color: cornflowerblue;font-weight: 550">0</span> 小时</p>
+                        <p>全年工作日加班工时：<span id="workday-hours-overtime" style="color: #f0ad4e;font-weight: 550">0</span> 小时</p>
+                        <p>全年休息日加班工时：<span id="weekday-hours" style="color: #d9534f;font-weight: 550">0</span> 小时</p>
                         <hr>
                         <p>应得年薪：<span id="deserved-year-salary" style="color: coral;font-weight: 550">0</span> /年</p>
                         <p>应得月薪：<span id="deserved-month-salary" style="color: coral;font-weight: 550">0</span> /月</p>
@@ -269,16 +270,16 @@
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input id="is-same-fund-base" type="checkbox" onchange="is_same_fund_base_onchange();calc();"> 与税前月薪一致
+                                <input id="is-same-fund-base" type="checkbox" onchange="is_same_fund_base_onchange();calc();"> 与税前月薪一致 (下限：2100，上限：33786)
                             </label>
                         </div>
                     </div>
                     <br>
                     <div id="result-pos">
                         <div id="result-box" class="result-box">
-                            <div class="panel panel-default" style="margin: 0 -15px 0 -15px;border-radius: 0;border-width: 1px 0">
-                                <div class="panel-body" style="">
-                                    补正月薪：<span id="corrected-month-salary" style="color: coral;font-weight: 550">0</span> /月
+                            <div class="panel panel-default" style="margin: 0 -15px 0 -15px;border-radius: 0;border-width: 1px 0 0 0">
+                                <div class="panel-body" style="font-size: 1.1em;background-color: #fafafa">
+                                    <strong>补正月薪：</strong><span id="corrected-month-salary" style="color: coral;font-weight: 550">0</span> /月
                                 </div>
                             </div>
                         </div>
@@ -288,6 +289,24 @@
         </div>
     </div>
 </main>
+
+<footer class="navbar navbar-inverse navbar-bottom" style="border-radius: 0; bottom: -50px;">
+    <div class="container">
+        <div class="navbar-left">
+            <ul class="nav navbar-nav" style="">
+                <li class="navbar-text">© 2021 George Huan. All rights reserved</li>
+                <li class="navbar-text"><iframe src="https://ghbtns.com/github-btn.html?user=georgehuan1994&repo=996-Salary-Calculator&type=star&count=true&v=2" frameborder="0" scrolling="0" width="120px" height="21px"></iframe></li>
+
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <ul class="nav navbar-nav" style="">
+<!--                <li class="navbar-text">© 2021 George Huan. All rights reserved</li>-->
+            </ul>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

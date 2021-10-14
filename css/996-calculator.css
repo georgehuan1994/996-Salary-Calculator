@@ -57,6 +57,8 @@ a:hover {
     position: relative;
     z-index: 10;
     bottom: 0;
+    -webkit-box-shadow: 0 -1px 8px 0 rgba(0,0,0,0.06);
+    box-shadow: 0 -1px 8px 0 rgba(0,0,0,0.06);
 }
 
 .result-box-flex {
@@ -72,11 +74,11 @@ a:hover {
 }
 @media (min-width: 992px) {
     .result-box-flex {
-        width: 584px;
+        width: 666px;
     }
 }
 @media (min-width: 1200px) {
     .result-box-flex {
-        width: 717px;
+        width: 815px;
     }
 }
