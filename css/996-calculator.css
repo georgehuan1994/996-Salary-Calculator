@@ -1,0 +1,50 @@
+body {
+    /*padding-top: 70px;*/
+    background-color: #f5f5f5;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #24292f;
+    text-rendering: optimizeLegibility;
+}
+
+a:hover {
+    color: #fff;
+    background-color: #444;
+    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    -moz-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.navbar-nav > li > a {
+    padding-top: 17px;
+    padding-bottom: 13px;
+}
+
+
+.col-lg-1 {
+    width: 50px;
+}
+
+.progress {
+    height: 70px;
+    width: 26px;
+    transform: rotate(180deg);
+    margin: 2px 0 0 0;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #5bc0de;
+}
+
+.progress-bar > p {
+    /*color: #000;*/
+}
+
+.ctrl {
+    width: 26px;
+    height: 20px;
+    padding: 0;
+}
