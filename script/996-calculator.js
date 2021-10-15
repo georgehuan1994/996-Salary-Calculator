@@ -22,8 +22,8 @@ let deserved_month_salary = 0;      // 应得月薪
 
 let how_many_month_get_paid = 12;   // 全年发放/月
 
-let enterprise_provident_fund_deposit_ratio = 5;    // 公积金缴存比例 (公司)
-let enterprise_provident_fund_deposit_base = 5000;  // 公积金缴存基数 (公司)
+let enterprise_provident_fund_deposit_ratio = 12;    // 公积金缴存比例 (公司)
+let enterprise_provident_fund_deposit_base = 25000;  // 公积金缴存基数 (公司)
 
 let corrected_month_salary = 0;     // 补正月薪
 
@@ -106,7 +106,7 @@ function calc() {
     }
     else {
         let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri + d_mon + d_tue + d_wed + d_thu + d_fri;
-        work_day_hours_normal = (_WorkDayHourTotal <= 9 * 5 * 2 ? _WorkDayHourTotal : 80) * 50 / 2;
+        work_day_hours_normal = (_WorkDayHourTotal <= 9 * 5 * 2 ? _WorkDayHourTotal : 9 * 5 * 2) * 50 / 2;
         work_day_hours_overtime = _WorkDayHourTotal * 50 / 2 - work_day_hours_normal;
         week_day_hours = (s_sat + s_sun + d_sat + d_sun) * 50 / 2;
         $('#workday-hours-normal').text(work_day_hours_normal);
@@ -274,7 +274,7 @@ function is_same_fund_base_onchange() {
     if (!$('#is-same-fund-base').prop('checked')) {
         enterprise_provident_fund_deposit_base = $('#enterprise-provident-fund-deposit-base').data('lastValue');
         if (enterprise_provident_fund_deposit_base == undefined) {
-            enterprise_provident_fund_deposit_base = 5000;
+            enterprise_provident_fund_deposit_base = 25000;
         }
         if (enterprise_provident_fund_deposit_base < 2100) {
             enterprise_provident_fund_deposit_base = 2100;

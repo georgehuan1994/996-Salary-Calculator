@@ -283,7 +283,7 @@
                             <div class="form-group">
                                 <label for="enterprise-provident-fund-deposit-ratio">公积金缴存比例 (公司)：</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" placeholder="5" step="1" min="5" max="12" onchange="check_fund_ratio();calc();">
+                                    <input type="number" class="form-control" id="enterprise-provident-fund-deposit-ratio" placeholder="12" step="1" min="5" max="12" onchange="check_fund_ratio();calc();">
                                     <div class="input-group-addon" style="border-width:1px 0px">%</div>
                                     <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_fund_ratio(-1);calc();">-</div>
                                     <div class="input-group-addon btn btn-default" style="background-color: white" onclick="set_fund_ratio(1);calc();">+</div>
@@ -296,10 +296,10 @@
                                 <label for="enterprise-provident-fund-deposit-base">公积金缴存基数 (公司)：</label>
                                 <div class="input-group">
                                     <div class="input-group-addon">￥</div>
-                                    <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" placeholder="5000" step="100" min="2100" max="33786" onchange="check_fund_base();calc();">
+                                    <input type="number" class="form-control" id="enterprise-provident-fund-deposit-base" placeholder="25000" step="1000" min="2100" max="33786" onchange="check_fund_base();calc();">
                                     <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" onclick="set_fund_base(-100);calc();">-</button>
-                                    <button class="btn btn-default" type="button" onclick="set_fund_base(100);calc();">+</button>
+                                    <button class="btn btn-default" type="button" onclick="set_fund_base(-1000);calc();">-</button>
+                                    <button class="btn btn-default" type="button" onclick="set_fund_base(1000);calc();">+</button>
                                 </span>
                                 </div>
                             </div>
