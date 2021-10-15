@@ -4,7 +4,11 @@ Page: https://georgehuan1994.github.io/996-Salary-Calculator/
 
 ## 前言
 
+<br/>
+
 > “你的期望薪资是多少？”
+
+<br/>
 
 这几乎是一个绕不过去的问题。
 
