@@ -5,12 +5,12 @@
 let s_mon, s_tue, s_wed, s_thu, s_fri, s_sat, s_sun;
 let d_mon, d_tue, d_wed, d_thu, d_fri, d_sat, d_sun;
 
-let expected_year_salary = 300000;  // 期望年薪，按「965、12薪、满额公积金」的标准
+let expected_year_salary = 300000;  // 期望年薪，按「955、12薪、满额公积金」的标准
 
 let standard_monthly_rate = 1;      // 标准月薪，按 12 月计算
 let standard_hourly_rate = 1;       // 标准时薪，按 965 计算
 
-let computing_mode = 965;           // 预设：965, 995, 995.5, 996, 0
+let computing_mode = 955;           // 预设：955, 965, 995, 995.5, 996, 0
 let is_single_week = true;          // 是否为单周模式
 
 let work_day_hours_normal = 0;      // 工作日正常工时
@@ -52,6 +52,10 @@ $(document).scroll(function (){
 
 function set_working_days(mode) {
     computing_mode = mode;
+    if (computing_mode === 955) {
+        init_progress(8,8,8,8,8,0,0,8,8,8,8,8,0,0);
+        show_double_week(false);
+    }
     if (computing_mode === 965) {
         init_progress(9,9,9,9,9,0,0,9,9,9,9,9,0,0);
         show_double_week(false);
@@ -97,7 +101,7 @@ function calc() {
     // 休息日超出0小时的部分计为休息日工时，2倍时薪。
     if (is_single_week){
         let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri;
-        work_day_hours_normal = (_WorkDayHourTotal <= 9 * 5 ? _WorkDayHourTotal : 9 * 5) * 50;
+        work_day_hours_normal = (_WorkDayHourTotal <= 8 * 5 ? _WorkDayHourTotal : 8 * 5) * 50;
         work_day_hours_overtime = _WorkDayHourTotal * 50 - work_day_hours_normal;
         week_day_hours = (s_sat + s_sun) * 50;
         $('#workday-hours-normal').text(work_day_hours_normal);
@@ -106,7 +110,7 @@ function calc() {
     }
     else {
         let _WorkDayHourTotal = s_mon + s_tue + s_wed + s_thu + s_fri + d_mon + d_tue + d_wed + d_thu + d_fri;
-        work_day_hours_normal = (_WorkDayHourTotal <= 9 * 5 * 2 ? _WorkDayHourTotal : 9 * 5 * 2) * 50 / 2;
+        work_day_hours_normal = (_WorkDayHourTotal <= 8 * 5 * 2 ? _WorkDayHourTotal : 8 * 5 * 2) * 50 / 2;
         work_day_hours_overtime = _WorkDayHourTotal * 50 / 2 - work_day_hours_normal;
         week_day_hours = (s_sat + s_sun + d_sat + d_sun) * 50 / 2;
         $('#workday-hours-normal').text(work_day_hours_normal);
@@ -121,7 +125,7 @@ function calc() {
 
     // 计算标准时薪、标准月薪
     standard_monthly_rate = expected_year_salary / 12;
-    standard_hourly_rate = expected_year_salary / (9 * 5 * 50);
+    standard_hourly_rate = expected_year_salary / (8 * 5 * 50);
     $('#standard-hourly-rate').text(standard_hourly_rate.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
     $('#standard-monthly-rate').text(standard_monthly_rate.toLocaleString('zh', {style:'currency', currency: 'CNY', minimumFractionDigits: 2}));
 
@@ -317,11 +321,19 @@ function toPercent(point) {
 }
 
 function set_progress_color(id,value) {
+    // text color
+    if (value > 5) {
+        id.children("p").css('color','#fff');
+    }
+    else {
+        id.children("p").css('color','#24292f');
+    }
+
     // progress color
-    if (value >= 10) {
+    if (value >= 9) {
         id.css('background-color','#f0ad4e');
     }
-    else if (value >= 8) {
+    else if (value = 8) {
         id.css('background-color','#5bc0de');
     }
     else {
@@ -332,14 +344,6 @@ function set_progress_color(id,value) {
     $('#s-sun').css('background-color','#d9534f');
     $('#d-sat').css('background-color','#d9534f');
     $('#d-sun').css('background-color','#d9534f');
-
-    // text color
-    if (value > 5) {
-        id.children("p").css('color','#fff');
-    }
-    else {
-        id.children("p").css('color','#24292f');
-    }
 }
 
 function show_double_week(b) {
